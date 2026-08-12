@@ -1,0 +1,29 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_WITH_LEGEND()
+
+title C4 Level 2: Enterprise Salesforce-to-SAP Integration Gateway Containers
+
+Person(salesUser, "Salesforce User / API Client", "Authenticated user or service agent")
+
+System_Boundary(gatewayBoundary, "Salesforce-to-SAP Gateway (SS-SAP-IG)") {
+    Container(sfNamedCred, "Salesforce Named Credentials", "Salesforce Security Module", "Stores encrypted outbound endpoints and tokens")
+    Container(apiGateway, "MuleSoft API Gateway", "Anypoint Platform / NGINX", "Handles rate limiting, WAF, OAuth token verification, and routing")
+    Container(integrationApp, "Order Transformation Microservice", "Mule runtime / Java", "Validates JSON schemas, maps payloads to SAP BAPIs, enforces ABAC")
+    Container(vault, "Secrets Manager", "HashiCorp Vault", "Stores SAP service account credentials and private signing keys")
+    Container(sapAdapter, "SAP Connector Gateway", "SAP JCo / OData Adapter", "Translates REST requests into SAP RFC/BAPI calls")
+}
+
+System_Ext(sapSystem, "SAP S/4HANA ERP Engine", "Main business logic, NetWeaver Gateway, HANA DB")
+System_Ext(idp, "Enterprise IdP", "Okta / Entra ID")
+System_Ext(siem, "Splunk SIEM", "Security Monitoring")
+
+Rel(salesUser, sfNamedCred, "Initiates action", "Internal SF Protocol")
+Rel(sfNamedCred, apiGateway, "Sends REST JSON Request", "HTTPS / TLS 1.3 + OAuth JWT")
+Rel(apiGateway, idp, "Validates JWT signature & scopes", "HTTPS / OIDC")
+Rel(apiGateway, integrationApp, "Forwards validated request", "mTLS / Internal VPC")
+Rel(integrationApp, vault, "Fetches dynamic SAP credentials", "mTLS / HTTPS")
+Rel(integrationApp, sapAdapter, "Passes transformed payload", "In-Memory / SEC")
+Rel(sapAdapter, sapSystem, "Executes RFC/OData calls", "mTLS / Encrypted SAP SNC")
+Rel(integrationApp, siem, "Streams structured audit logs", "Encrypted Syslog")
+@enduml
