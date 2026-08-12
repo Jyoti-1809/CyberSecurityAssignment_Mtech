@@ -1,0 +1,12 @@
+@startuml
+skinparam shadowing false
+title MITRE-Aligned Attack Graph Scenario 1: Payload Tampering
+
+start
+:Reconnaissance: Scan Salesforce Apex & Named Credentials;
+:Initial Access: Extract OAuth Token from memory dump;
+:Execution: Intercept REST call & tamper JSON unit price;
+:Lateral Movement: Pass tampered payload to MuleSoft Worker;
+:Action on Objectives: Execute BAPI_SALESORDER_CREATE in SAP;
+stop
+@enduml
