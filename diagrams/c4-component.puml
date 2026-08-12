@@ -1,0 +1,29 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+LAYOUT_WITH_LEGEND()
+
+title C4 Level 3: Component Diagram - Order Transformation Microservice
+
+Container_Boundary(transService, "Order Transformation Microservice") {
+    Component(tokenAuth, "OAuth & JWT Verifier", "Spring Security / Java", "Validates bearer token signatures, expiration, and claims")
+    Component(schemaVal, "JSON Schema Validator", "Everit JSON Validator", "Strictly enforces mandatory fields, numerical bounds, and data types")
+    Component(abacEngine, "ABAC Policy Engine", "Open Policy Agent (OPA)", "Verifies user roles, deal limits, and tenant boundaries")
+    Component(transformer, "Data Mapping Engine", "DataWeave 2.0", "Transforms JSON structures into SAP XML/BAPI parameters")
+    Component(replayCheck, "Replay & Nonce Manager", "Redis Cache", "Checks transaction UUIDs to prevent duplicate execution")
+    Component(auditComp, "Audit & Security Logger", "Log4j2 / JSON Appender", "Generates immutable audit logs with correlation IDs")
+}
+
+Container(apiGw, "API Gateway", "MuleSoft")
+Container(sapGateway, "SAP Connector Gateway", "SAP JCo")
+Container(siemSys, "Splunk SIEM", "Enterprise Monitoring")
+
+Rel(apiGw, tokenAuth, "Delivers payload", "mTLS")
+Rel(tokenAuth, schemaVal, "Authenticated context")
+Rel(schemaVal, replayCheck, "Validated structure")
+Rel(replayCheck, abacEngine, "Unique request UUID")
+Rel(abacEngine, transformer, "Authorized policy decision")
+Rel(transformer, sapGateway, "Passes BAPI payload")
+Rel(tokenAuth, auditComp, "Logs auth failure/success")
+Rel(abacEngine, auditComp, "Logs policy denials")
+Rel(auditComp, siemSys, "Streams log events")
+@enduml
