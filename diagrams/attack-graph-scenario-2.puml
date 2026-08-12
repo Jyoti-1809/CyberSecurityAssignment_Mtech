@@ -1,0 +1,14 @@
+@startuml
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+
+title MITRE-Aligned Attack Graph Scenario 2: SAP OData Exfiltration
+
+start
+:Reconnaissance: Port scan perimeter for exposed SAP NetWeaver ports;
+:Initial Access: Access unauthenticated /sap/opu/odata endpoint;
+:Privilege Escalation: Abuse generic RFC user table access (S_TABU_DIS);
+:Collection: Perform bulk SQL query dumps on SAP HANA tables;
+:Exfiltration: Exfiltrate compressed financial data via outbound HTTPS;
+stop
+@enduml
