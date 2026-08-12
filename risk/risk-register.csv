@@ -1,0 +1,6 @@
+*CSV file*
+RiskID,Threat,Asset,Impact,Likelihood,CVSS_Vector,CVSS_Score,Existing_Control,Proposed_Control,Residual_Risk
+R01,Salesforce-to-SAP Payload Tampering,MuleSoft Ingestion API,Critical,High,AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N,9.1,Basic API Key,RS256 Payload Signing & JSON Schema Validation,Low
+R02,Unauthenticated SAP OData Exposure,SAP NetWeaver Gateway,Critical,Medium,AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H,9.8,Firewall Rules,ZTNA Private Link & Mandatory OData Auth,Low
+R03,Static Integration Secret Leakage,Salesforce Named Credentials,High,High,AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N,6.5,Static OAuth Secret,HashiCorp Vault Dynamic Secrets Rotation,Low
+R04,SOX Compliance Pricing Override,SAP Sales Order BAPI,High,Medium,AV:N/AC:H/PR:L/UI:N/S:U/C:N/I:H/A:N,5.3,RBAC Authorization,OPA ABAC Policies & Immutable Audit Logging,Low
